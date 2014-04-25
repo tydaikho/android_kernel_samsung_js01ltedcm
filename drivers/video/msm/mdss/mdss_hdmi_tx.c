@@ -2704,15 +2704,6 @@ static void hdmi_tx_power_off_work(struct work_struct *work)
 		return;
 	}
 
-#if defined (CONFIG_VIDEO_MHL_V2)
-	if (hdmi_ctrl->present_hdcp) {
-#else
-	if (hdmi_ctrl->hdcp_feature_on && hdmi_ctrl->present_hdcp) {
-#endif
-		DEV_DBG("%s: Turning off HDCP\n", __func__);
-		hdmi_hdcp_off(hdmi_ctrl->feature_data[HDMI_TX_FEAT_HDCP]);
-	}
-
 	if (hdmi_tx_enable_power(hdmi_ctrl, HDMI_TX_DDC_PM, false))
 		DEV_WARN("%s: Failed to disable ddc power\n", __func__);
 
@@ -3388,6 +3379,18 @@ static int hdmi_tx_panel_event_handler(struct mdss_panel_data *panel_data,
 		break;
 
 	case MDSS_EVENT_BLANK:
+		#if defined (CONFIG_VIDEO_MHL_V2)
+			if (hdmi_ctrl->present_hdcp) {
+		#else
+			if (hdmi_ctrl->hdcp_feature_on && hdmi_ctrl->present_hdcp) {
+		#endif
+				DEV_DBG("%s: Turning off HDCP\n", __func__);
+				hdmi_hdcp_off(
+				hdmi_ctrl->feature_data[HDMI_TX_FEAT_HDCP]);
+			}
+		break;
+
+	case MDSS_EVENT_PANEL_OFF:
 		if (hdmi_ctrl->panel_power_on) {
 			rc = hdmi_tx_power_off(panel_data);
 			if (rc)
@@ -3397,9 +3400,7 @@ static int hdmi_tx_panel_event_handler(struct mdss_panel_data *panel_data,
 		} else {
 			DEV_DBG("%s: hdmi is already powered off\n", __func__);
 		}
-		break;
 
-	case MDSS_EVENT_PANEL_OFF:
 #if defined (CONFIG_VIDEO_MHL_V2) || defined (CONFIG_VIDEO_MHL_SII8246)
 		/* During HPD low seqeunce, sometimes HDMI power off work is stucked
 		 * because of function sync problem.
