@@ -1634,6 +1634,9 @@ int mdss_dsi_cmdlist_commit(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp)
 	int ret = -EINVAL;
 	int rc = 0;
 
+	if (mdss_get_sd_client_cnt())
+		return -EPERM;
+
 #ifndef CONFIG_LCD_FORCE_VIDEO_MODE
 	if (ctrl->panel_mode == DSI_CMD_MODE)
 		mdss_mdp_clk_ctrl(1, false);
