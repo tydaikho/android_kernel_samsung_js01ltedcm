@@ -119,6 +119,9 @@ static struct usb_device_id btusb_table[] = {
 	/* Broadcom devices with vendor specific id */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0a5c, 0xff, 0x01, 0x01) },
 
+	/* Intel Bluetooth USB Bootloader (RAM module) */
+	{ USB_DEVICE(0x8087, 0x0a5a), .driver_info = BTUSB_INTEL_BOOT },
+
 	{ }	/* Terminating entry */
 };
 
@@ -1057,6 +1060,9 @@ static int btusb_probe(struct usb_interface *intf,
 	hdev->notify   = btusb_notify;
 
 	hdev->owner = THIS_MODULE;
+
+	if (id->driver_info & BTUSB_INTEL_BOOT)
+		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
 
 	/* Interface numbers are hardcoded in the specification */
 	data->isoc = usb_ifnum_to_if(data->udev, 1);
