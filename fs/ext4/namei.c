@@ -1999,6 +1999,9 @@ int ext4_orphan_add(handle_t *handle, struct inode *inode)
 	struct ext4_iloc iloc;
 	int err = 0, rc;
 
+	if (!ext4_handle_valid(handle) || is_bad_inode(inode))
+		return 0;
+
 	if (!EXT4_SB(sb)->s_journal)
 		return 0;
 
