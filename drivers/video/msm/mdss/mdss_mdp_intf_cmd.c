@@ -992,12 +992,10 @@ int mdss_mdp_cmd_stop(struct mdss_mdp_ctl *ctl)
 							ctx->pp_num);
 				ctx->rdptr_enabled = 0;
 #else
-				if (pinfo->panel_dead) {
-					mdss_mdp_irq_disable
-						(MDSS_MDP_IRQ_PING_PONG_RD_PTR,
-								ctx->pp_num);
-					ctx->rdptr_enabled = 0;
-				}
+				mdss_mdp_irq_disable
+					(MDSS_MDP_IRQ_PING_PONG_RD_PTR,
+							ctx->pp_num);
+				ctx->rdptr_enabled = 0;
 #endif
 			}
 		}
