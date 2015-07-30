@@ -3178,9 +3178,8 @@ static int iris_vidioc_g_ctrl(struct file *file, void *priv,
 	default:
 		retval = -EINVAL;
 	}
-	if (retval < 0)
-		FMDERR("get control failed with %d, id: %d\n",
-			retval, ctrl->id);
+	if (ctrl != NULL && retval < 0)
+		FMDERR("get control failed: %d, ret: %d\n", ctrl->id, retval);
 	return retval;
 }
 
@@ -4421,14 +4420,20 @@ static int iris_fops_release(struct file *file)
 		return -EINVAL;
 
 	if (radio->mode == FM_OFF)
-		return 0;
+		goto END;
 
-	if (radio->mode == FM_RECV)
+	if (radio->mode == FM_RECV) {
 		retval = hci_cmd(HCI_FM_DISABLE_RECV_CMD,
 						radio->fm_hdev);
-	else if (radio->mode == FM_TRANS)
+	} else if (radio->mode == FM_TRANS) {
 		retval = hci_cmd(HCI_FM_DISABLE_TRANS_CMD,
 					radio->fm_hdev);
+	} else if (radio->mode == FM_CALIB) {
+		radio->mode = FM_OFF;
+		return retval;
+	}
+END:
+	radio->fm_hdev->close_smd();
 	if (retval < 0)
 		FMDERR("Err on disable FM %d\n", retval);
 
