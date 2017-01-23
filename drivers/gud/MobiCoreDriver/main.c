@@ -1,21 +1,15 @@
 /*
- * MobiCore Driver Kernel Module.
+ * Copyright (c) 2013-2016 TRUSTONIC LIMITED
+ * All Rights Reserved.
  *
- * This driver represents the command proxy on the lowest layer, from the
- * secure world to the non secure world, and vice versa.
-
- * This driver offers IOCTL commands, for access to the secure world, and has
- * the interface from the secure world to the normal world.
- * The access to the driver is possible with a file descriptor,
- * which has to be created by the fd = open(/dev/mobicore) command or
- * fd = open(/dev/mobicore-user)
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
  *
- * <-- Copyright Giesecke & Devrient GmbH 2009-2012 -->
- * <-- Copyright Trustonic Limited 2013 -->
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  */
 #include <linux/miscdevice.h>
 #include <linux/interrupt.h>
@@ -488,6 +482,7 @@ static phys_addr_t get_mci_base_phys(unsigned int len)
 		ctx.mci_base.order = order;
 		ctx.mci_base.addr =
 			(void *)__get_free_pages(GFP_USER | __GFP_ZERO, order);
+		ctx.mci_base.len = (1 << order) * PAGE_SIZE;
 		if (ctx.mci_base.addr == NULL) {
 			MCDRV_DBG_WARN(mcd, "get_free_pages failed");
 			memset(&ctx.mci_base, 0, sizeof(ctx.mci_base));
@@ -707,6 +702,9 @@ found:
 		paddr = get_mci_base_phys(len);
 		if (!paddr)
 			return -EFAULT;
+
+		if (len != ctx.mci_base.len)
+			return -EINVAL;
 
 		vmarea->vm_flags |= VM_IO;
 		/*
