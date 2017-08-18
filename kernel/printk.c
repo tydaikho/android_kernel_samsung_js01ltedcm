@@ -660,7 +660,7 @@ static int __init log_buf_len_setup(char *str)
 early_param("log_buf_len", log_buf_len_setup);
 
 #ifdef CONFIG_SEC_DEBUG
-#define CONFIG_PRINTK_NOCACHE
+//#define CONFIG_PRINTK_NOCACHE
 /*
  * Example usage: sec_log=256K@0x45000000
  *
@@ -735,9 +735,11 @@ static void __init sec_log_save_old(void)
 		       __func__, last_kmsg_size, last_kmsg_buffer);
 }
 #else
+#if 0
 static void __init sec_log_save_old(void)
 {
 }
+#endif
 #endif
 
 	

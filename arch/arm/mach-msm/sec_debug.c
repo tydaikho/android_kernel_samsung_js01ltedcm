@@ -227,8 +227,10 @@ static unsigned pm8841_rev = 0;
 unsigned int sec_dbg_level;
 
 uint runtime_debug_val;
+#if 0
 static uint32_t tzapps_start_addr;
 static uint32_t tzapps_size;
+#endif
 
 module_param_named(enable, enable, uint, 0644);
 module_param_named(enable_user, enable_user, uint, 0644);
@@ -264,7 +266,9 @@ static char *sec_build_time[] = {
 	__DATE__,
 	__TIME__
 };
+#if 0
 static char build_root[] = __FILE__;
+#endif
 
 /* klaatu - schedule log */
 #ifdef CONFIG_SEC_DEBUG_SCHED_LOG
@@ -747,6 +751,7 @@ DEFINE_PER_CPU(struct sec_debug_core_t, sec_debug_core_reg);
 DEFINE_PER_CPU(struct sec_debug_mmu_reg_t, sec_debug_mmu_reg);
 DEFINE_PER_CPU(enum sec_debug_upload_cause_t, sec_debug_upload_cause);
 
+#if 0
 /* save last_pet and last_ns with these nice functions */
 void sec_debug_save_last_pet(unsigned long long last_pet)
 {
@@ -761,6 +766,7 @@ void sec_debug_save_last_ns(unsigned long long last_ns)
 }
 EXPORT_SYMBOL(sec_debug_save_last_pet);
 EXPORT_SYMBOL(sec_debug_save_last_ns);
+#endif
 
 #ifdef CONFIG_HOTPLUG_CPU
 static void pull_down_other_cpus(void)
@@ -1168,6 +1174,7 @@ static int __init sec_debug_level(char *str)
 }
 early_param("level", sec_debug_level);
 
+#if 0
 bool kernel_sec_set_debug_level(int level)
 {
 	if (!(level == KERNEL_SEC_DEBUG_LEVEL_LOW
@@ -1227,6 +1234,7 @@ int kernel_sec_get_debug_level(void)
 	return sec_dbg_level;
 }
 EXPORT_SYMBOL(kernel_sec_get_debug_level);
+#endif
 
 #ifdef CONFIG_SEC_MONITOR_BATTERY_REMOVAL
 static unsigned normal_off = 0;
@@ -1765,6 +1773,7 @@ static void sec_debug_set_build_info(void)
 	strlcat(p, sec_build_time[1], sizeof(sec_build_info));
 }
 
+#if 0
 static int __init __init_sec_debug_log(void)
 {
 	int i;
@@ -1831,6 +1840,7 @@ static int __init __init_sec_debug_log(void)
 
 	return 0;
 }
+#endif
 
 #ifdef CONFIG_SEC_DEBUG_SUBSYS
 int sec_debug_save_die_info(const char *str, struct pt_regs *regs)
